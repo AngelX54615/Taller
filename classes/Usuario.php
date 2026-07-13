@@ -16,26 +16,6 @@ class Usuario
     }
 
     /**
-     * Crea la cuenta de acceso de un empleado ya existente. La contraseña se guarda
-     * con password_hash(), nunca en texto plano.
-     */
-    public function registrar(string $correo, string $password, int $idEmpleado): int
-    {
-        $sql = "INSERT INTO usuario (correo, password_hash, id_empleado)
-                VALUES (:correo, :password_hash, :id_empleado)";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            ':correo'        => $correo,
-            ':password_hash' => password_hash($password, PASSWORD_DEFAULT),
-            ':id_empleado'   => $idEmpleado,
-        ]);
-
-        $this->id_usuario = (int) $this->db->lastInsertId();
-        return $this->id_usuario;
-    }
-
-    /**
      * Verifica correo/contraseña. Si son correctos, devuelve los datos necesarios
      * para la sesión (incluyendo el rol: 'Mecanico' o 'Administrativo', según en
      * qué tabla hija está dado de alta el empleado). Devuelve false si algo falla.

@@ -46,19 +46,40 @@ PHP puro (sin frameworks) + MySQL, pensado para correr con XAMPP.
 
 ## Primer uso
 
-La base de datos importada no trae empleados ni cuentas de acceso. Para
-entrar por primera vez:
+El sistema no tiene pantalla de registro: los empleados y sus cuentas de
+acceso se dan de alta directamente en la base de datos.
 
-1. En el menú principal, entra a **Crear cuenta de acceso**
-   (`registrar_usuario.php`).
-2. Llena los datos del empleado (nombre, apellidos, teléfono, dirección,
-   turno), elige si es **Mecánico** o **Administrativo** (con su
-   especialidad, o área), y captura correo + contraseña.
-3. Al guardar, el sistema crea el empleado y su cuenta de acceso juntos.
-   Repite el paso para dar de alta más empleados (por ejemplo, uno de cada
-   rol para probar ambos flujos).
-4. Inicia sesión — el sistema te manda automáticamente al panel de
-   Mecánico o de Administrativo según el rol de la cuenta.
+1. **Inserta el empleado** en `empleado`, y luego en `mecanico` o
+   `administrativo` según su rol (comparten el mismo `id_empleado`):
+
+   ```sql
+   INSERT INTO empleado (nombre, apellido_pat, apellido_mat, telefono, direccion, turno)
+   VALUES ('Juan', 'Pérez', 'López', '6561234567', 'Calle Falsa 123', 'Matutino');
+
+   -- usa el id_empleado generado arriba
+   INSERT INTO mecanico (id_empleado, especialidad) VALUES (LAST_INSERT_ID(), 'Motor y transmisión');
+   -- o, si es administrativo:
+   -- INSERT INTO administrativo (id_empleado, area) VALUES (LAST_INSERT_ID(), 'Recepción');
+   ```
+
+2. **Genera el hash de la contraseña** (la tabla `usuario` nunca guarda
+   contraseñas en texto plano). Con PHP desde línea de comandos:
+
+   ```bash
+   php -r "echo password_hash('la_contraseña_que_quieras', PASSWORD_DEFAULT);"
+   ```
+
+3. **Inserta la cuenta de acceso**, usando el `id_empleado` del paso 1 y el
+   hash del paso 2:
+
+   ```sql
+   INSERT INTO usuario (correo, password_hash, id_empleado)
+   VALUES ('juan.perez@taller.com', '<hash_generado_en_el_paso_2>', <id_empleado>);
+   ```
+
+4. Inicia sesión en `login.php` — el sistema te manda automáticamente al
+   panel de Mecánico o de Administrativo según en cuál de las dos tablas
+   (`mecanico` o `administrativo`) esté dado de alta el empleado.
 
 ## Estructura del proyecto
 

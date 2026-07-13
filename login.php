@@ -51,6 +51,4 @@ require __DIR__ . '/partials/header.php';
 
         <button type="submit">Iniciar sesión</button>
     </form>
-
-    <p class="registro"><a href="registrar_usuario.php">Crear cuenta de acceso para un empleado</a></p>
 <?php require __DIR__ . '/partials/footer.php'; ?>

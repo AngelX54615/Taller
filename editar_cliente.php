@@ -147,7 +147,8 @@ require __DIR__ . '/partials/header.php';
                 <input type="hidden" name="accion" value="actualizar_cliente">
                 <input type="hidden" name="id_cliente" value="<?= $clienteSeleccionado['id_cliente'] ?>">
 
-                <p><strong><?= htmlspecialchars($clienteSeleccionado['nombre'] . ' ' . $clienteSeleccionado['apellido_pat']) ?></strong></p>
+                <p><strong><?= htmlspecialchars($clienteSeleccionado['nombre'] . ' ' . $clienteSeleccionado['apellido_pat']) ?></strong>
+                   <span class="badge badge-pendiente">ID: <?= $clienteSeleccionado['id_cliente'] ?></span></p>
 
                 <label for="telefono">Teléfono *</label>
                 <input type="text" id="telefono" name="telefono" required
@@ -238,9 +239,10 @@ require __DIR__ . '/partials/header.php';
 
         <?php if (!empty($resultadosBusqueda)): ?>
             <table>
-                <tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th></th></tr>
+                <tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th></th></tr>
                 <?php foreach ($resultadosBusqueda as $c): ?>
                     <tr>
+                        <td><?= $c['id_cliente'] ?></td>
                         <td><?= htmlspecialchars($c['nombre'] . ' ' . $c['apellido_pat']) ?></td>
                         <td><?= htmlspecialchars($c['telefono'] ?? '') ?></td>
                         <td><?= htmlspecialchars($c['correo'] ?? '') ?></td>

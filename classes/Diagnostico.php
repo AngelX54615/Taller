@@ -68,4 +68,34 @@ class Diagnostico
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
     }
+
+    /**
+     * Diagnósticos ya registrados sobre los que el administrativo todavía no
+     * captura la decisión del cliente (aceptar o rechazar la reparación).
+     */
+    public function pendientesDeDecision(): array
+    {
+        $sql = "SELECT d.id_diagnostico, d.descripcion, d.presupuesto,
+                       c.id_mecanico,
+                       cl.nombre AS cliente_nombre, cl.apellido_pat AS cliente_apellido,
+                       a.marca, a.modelo,
+                       e.nombre AS mecanico_nombre, e.apellido_pat AS mecanico_apellido
+                FROM diagnostico d
+                INNER JOIN cita c ON c.id_cita = d.id_cita
+                INNER JOIN cliente cl ON cl.id_cliente = c.id_cliente
+                INNER JOIN auto a ON a.id_auto = c.id_auto
+                INNER JOIN empleado e ON e.id_empleado = c.id_mecanico
+                WHERE d.decision_cliente = 'Pendiente'
+                ORDER BY d.creado_en";
+
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function actualizarDecision(int $id, string $decision): bool
+    {
+        $sql = "UPDATE diagnostico SET decision_cliente = :decision WHERE id_diagnostico = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':decision' => $decision, ':id' => $id]);
+    }
 }

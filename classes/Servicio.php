@@ -23,17 +23,21 @@ class Servicio
 
     /**
      * Un mecánico solo puede trabajar en un servicio a la vez: no se le puede
-     * asignar uno nuevo mientras tenga otro Pendiente o En proceso.
+     * asignar uno nuevo Pendiente/En proceso mientras tenga otro activo. Esto no
+     * aplica cuando el servicio nace ya Finalizado (p. ej. el cliente rechazó la
+     * reparación tras el diagnóstico): ahí no hay trabajo nuevo que empezar.
      */
     public function guardar(): int
     {
-        $sqlOcupado = "SELECT COUNT(*) FROM servicio
-                        WHERE id_mecanico = :id_mecanico AND estado IN ('Pendiente', 'En proceso')";
-        $stmtOcupado = $this->db->prepare($sqlOcupado);
-        $stmtOcupado->execute([':id_mecanico' => $this->id_mecanico]);
+        if (in_array($this->estado, ['Pendiente', 'En proceso'], true)) {
+            $sqlOcupado = "SELECT COUNT(*) FROM servicio
+                            WHERE id_mecanico = :id_mecanico AND estado IN ('Pendiente', 'En proceso')";
+            $stmtOcupado = $this->db->prepare($sqlOcupado);
+            $stmtOcupado->execute([':id_mecanico' => $this->id_mecanico]);
 
-        if ((int) $stmtOcupado->fetchColumn() > 0) {
-            throw new Exception("Este mecánico ya tiene un servicio activo; no puede trabajar en otro a la vez.");
+            if ((int) $stmtOcupado->fetchColumn() > 0) {
+                throw new Exception("Este mecánico ya tiene un servicio activo; no puede trabajar en otro a la vez.");
+            }
         }
 
         $sql = "INSERT INTO servicio (costo, descripcion, tipo_servicio, tiempo_estimado, estado,
@@ -58,7 +62,9 @@ class Servicio
     }
 
     /**
-     * Diagnósticos que ya existen pero que todavía no tienen una orden de servicio generada.
+     * Diagnósticos ya aceptados por el cliente que todavía no tienen una orden
+     * de servicio generada. Los que siguen "Pendiente" de decisión, o que el
+     * cliente "Rechazó", no aparecen aquí: ver Diagnostico::pendientesDeDecision().
      */
     public function diagnosticosSinServicio(): array
     {
@@ -72,7 +78,8 @@ class Servicio
                 INNER JOIN cliente cl ON cl.id_cliente = c.id_cliente
                 INNER JOIN auto a ON a.id_auto = c.id_auto
                 INNER JOIN empleado e ON e.id_empleado = c.id_mecanico
-                WHERE d.id_diagnostico NOT IN (SELECT id_diagnostico FROM servicio)
+                WHERE d.decision_cliente = 'Aceptado'
+                  AND d.id_diagnostico NOT IN (SELECT id_diagnostico FROM servicio)
                 ORDER BY d.creado_en";
 
         $stmt = $this->db->query($sql);

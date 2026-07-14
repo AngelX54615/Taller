@@ -113,6 +113,7 @@ CREATE TABLE diagnostico (
     presupuesto     DECIMAL(10,2),
     id_cita         INT NOT NULL,
     id_mecanico     INT NOT NULL,
+    decision_cliente ENUM('Pendiente','Aceptado','Rechazado') DEFAULT 'Pendiente',
     creado_en       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_diagnostico_cita
         FOREIGN KEY (id_cita) REFERENCES cita(id_cita),

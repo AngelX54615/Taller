@@ -62,6 +62,41 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_PO
     $autosCliente = $autoObj->listarPorCliente($idCliente);
 }
 
+// Agregar un vehículo nuevo al cliente
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'agregar_auto') {
+    $idCliente = (int) $_POST['id_cliente'];
+    $tipo = trim($_POST['tipo'] ?? '');
+    $marca = trim($_POST['marca'] ?? '');
+    $modelo = trim($_POST['modelo'] ?? '');
+    $color = trim($_POST['color'] ?? '');
+    $anio = trim($_POST['anio'] ?? '');
+    $placa = trim($_POST['placa'] ?? '');
+
+    if ($placa === '') {
+        $error = "La placa es obligatoria para agregar un vehículo.";
+    } else {
+        try {
+            $auto = new Auto();
+            $auto->tipo = $tipo ?: null;
+            $auto->marca = $marca ?: null;
+            $auto->modelo = $modelo ?: null;
+            $auto->color = $color ?: null;
+            $auto->anio = $anio !== '' ? (int) $anio : null;
+            $auto->placa = $placa;
+            $auto->id_cliente = $idCliente;
+            $auto->guardar();
+            $mensaje = "Vehículo agregado correctamente.";
+        } catch (Exception $e) {
+            $error = "Ocurrió un error al guardar: " . $e->getMessage();
+        }
+    }
+
+    $clienteObj = new Cliente();
+    $clienteSeleccionado = $clienteObj->buscarPorId($idCliente);
+    $autoObj = new Auto();
+    $autosCliente = $autoObj->listarPorCliente($idCliente);
+}
+
 // Ya se eligió un cliente (viene por GET) -> mostrar su ficha editable
 elseif (isset($_GET['id_cliente'])) {
     $idCliente = (int) $_GET['id_cliente'];
@@ -162,6 +197,34 @@ require __DIR__ . '/partials/header.php';
                 </fieldset>
             <?php endforeach; ?>
         <?php endif; ?>
+
+        <fieldset>
+            <legend>Agregar vehículo</legend>
+            <form method="POST" action="">
+                <input type="hidden" name="accion" value="agregar_auto">
+                <input type="hidden" name="id_cliente" value="<?= $clienteSeleccionado['id_cliente'] ?>">
+
+                <label for="tipo_nuevo">Tipo</label>
+                <input type="text" id="tipo_nuevo" name="tipo" placeholder="Sedán, Pickup, SUV...">
+
+                <label for="marca_nuevo">Marca</label>
+                <input type="text" id="marca_nuevo" name="marca">
+
+                <label for="modelo_nuevo">Modelo</label>
+                <input type="text" id="modelo_nuevo" name="modelo">
+
+                <label for="color_nuevo">Color</label>
+                <input type="text" id="color_nuevo" name="color">
+
+                <label for="anio_nuevo">Año</label>
+                <input type="number" id="anio_nuevo" name="anio" min="1900" max="2100">
+
+                <label for="placa_nuevo">Placa *</label>
+                <input type="text" id="placa_nuevo" name="placa" maxlength="10" required>
+
+                <button type="submit">Agregar vehículo</button>
+            </form>
+        </fieldset>
 
     <?php else: ?>
         <!-- Buscar cliente -->

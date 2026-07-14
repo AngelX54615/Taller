@@ -20,14 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
     $hora      = trim($_POST['hora'] ?? '');
     $motivo    = trim($_POST['motivo'] ?? '');
 
-    if ($fecha === '' || $hora === '') {
-        $error = "La fecha y la hora son obligatorias.";
+    if ($fecha === '' || $hora === '' || $motivo === '') {
+        $error = "La fecha, la hora y el motivo son obligatorios.";
     } else {
         try {
             $cita = new Cita();
             $cita->fecha = $fecha;
             $cita->hora = $hora;
-            $cita->motivo = $motivo ?: null;
+            $cita->motivo = $motivo;
             $cita->id_cliente = $idCliente;
             $cita->id_auto = $idAuto;
 
@@ -118,8 +118,8 @@ require __DIR__ . '/partials/header.php';
                     <label for="hora">Hora *</label>
                     <input type="time" id="hora" name="hora" required>
 
-                    <label for="motivo">Motivo</label>
-                    <input type="text" id="motivo" name="motivo" placeholder="Ruido en frenos, cambio de aceite...">
+                    <label for="motivo">Motivo *</label>
+                    <input type="text" id="motivo" name="motivo" placeholder="Ruido en frenos, cambio de aceite..." required>
                 </fieldset>
 
                 <button type="submit">Agendar cita</button>

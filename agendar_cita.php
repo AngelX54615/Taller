@@ -54,12 +54,22 @@ elseif (isset($_GET['id_cliente'])) {
     $autosCliente = $autoObj->listarPorCliente($idCliente);
 }
 
-// PASO 1: se envió una búsqueda de cliente
+// PASO 1: se envió una búsqueda de cliente (por nombre, teléfono, correo, id, o placa de un vehículo)
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'buscar') {
     $criterio = trim($_POST['criterio'] ?? '');
     if ($criterio !== '') {
         $clienteObj = new Cliente();
         $resultadosBusqueda = $clienteObj->buscar($criterio);
+
+        $autoObj = new Auto();
+        $autoPorPlaca = $autoObj->buscarPorPlaca($criterio);
+        if ($autoPorPlaca) {
+            $clienteDePlaca = $clienteObj->buscarPorId($autoPorPlaca['id_cliente']);
+            $yaEstaEnResultados = in_array($autoPorPlaca['id_cliente'], array_column($resultadosBusqueda, 'id_cliente'), true);
+            if ($clienteDePlaca && !$yaEstaEnResultados) {
+                $resultadosBusqueda[] = $clienteDePlaca;
+            }
+        }
     }
 }
 $titulo = 'Agendar Cita';
@@ -119,7 +129,7 @@ require __DIR__ . '/partials/header.php';
         <!-- PASO 1: buscar cliente -->
         <form method="POST" action="">
             <input type="hidden" name="accion" value="buscar">
-            <label for="criterio">Buscar cliente por nombre, teléfono, correo o id</label>
+            <label for="criterio">Buscar cliente por nombre, teléfono, correo, id o placa del vehículo</label>
             <input type="text" id="criterio" name="criterio" required
                    value="<?= htmlspecialchars($_POST['criterio'] ?? '') ?>">
             <button type="submit">Buscar</button>

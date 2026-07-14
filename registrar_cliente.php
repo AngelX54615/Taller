@@ -23,10 +23,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $modelo = trim($_POST['modelo'] ?? '');
     $color  = trim($_POST['color'] ?? '');
     $anio   = trim($_POST['anio'] ?? '');
+    $placa  = trim($_POST['placa'] ?? '');
+
+    $registrarAuto = ($marca !== '' || $modelo !== '' || $placa !== '');
 
     // Validación básica (RF2 requiere nombre, correo, teléfono)
     if ($nombre === '' || $apellido_pat === '' || $telefono === '') {
         $error = "Nombre, apellido paterno y teléfono son obligatorios.";
+    } elseif ($registrarAuto && $placa === '') {
+        $error = "La placa es obligatoria para registrar un vehículo.";
     } else {
         try {
             // Guardar cliente
@@ -39,13 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $idCliente = $cliente->guardar();
 
             // Guardar auto asociado (si se llenaron datos del vehículo)
-            if ($marca !== '' || $modelo !== '') {
+            if ($registrarAuto) {
                 $auto = new Auto();
                 $auto->tipo = $tipo ?: null;
                 $auto->marca = $marca ?: null;
                 $auto->modelo = $modelo ?: null;
                 $auto->color = $color ?: null;
                 $auto->anio = $anio !== '' ? (int) $anio : null;
+                $auto->placa = $placa;
                 $auto->id_cliente = $idCliente;
                 $auto->guardar();
             }
@@ -107,6 +113,9 @@ require __DIR__ . '/partials/header.php';
 
             <label for="anio">Año</label>
             <input type="number" id="anio" name="anio" min="1900" max="2100">
+
+            <label for="placa">Placa *</label>
+            <input type="text" id="placa" name="placa" maxlength="10" placeholder="Obligatoria si registras un vehículo">
         </fieldset>
 
         <button type="submit">Registrar</button>

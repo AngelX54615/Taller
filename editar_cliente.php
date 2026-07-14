@@ -45,6 +45,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_PO
         'modelo' => trim($_POST['modelo'] ?? '') ?: null,
         'color'  => trim($_POST['color'] ?? '') ?: null,
         'anio'   => trim($_POST['anio'] ?? '') !== '' ? (int) $_POST['anio'] : null,
+        'placa'  => trim($_POST['placa'] ?? '') ?: null,
     ];
 
     try {
@@ -72,12 +73,22 @@ elseif (isset($_GET['id_cliente'])) {
     $autosCliente = $autoObj->listarPorCliente($idCliente);
 }
 
-// Se envió una búsqueda de cliente
+// Se envió una búsqueda de cliente (por nombre, teléfono, correo, id, o placa de un vehículo)
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'buscar') {
     $criterio = trim($_POST['criterio'] ?? '');
     if ($criterio !== '') {
         $clienteObj = new Cliente();
         $resultadosBusqueda = $clienteObj->buscar($criterio);
+
+        $autoObj = new Auto();
+        $autoPorPlaca = $autoObj->buscarPorPlaca($criterio);
+        if ($autoPorPlaca) {
+            $clienteDePlaca = $clienteObj->buscarPorId($autoPorPlaca['id_cliente']);
+            $yaEstaEnResultados = in_array($autoPorPlaca['id_cliente'], array_column($resultadosBusqueda, 'id_cliente'), true);
+            if ($clienteDePlaca && !$yaEstaEnResultados) {
+                $resultadosBusqueda[] = $clienteDePlaca;
+            }
+        }
     }
 }
 $titulo = 'Editar Cliente';
@@ -122,7 +133,7 @@ require __DIR__ . '/partials/header.php';
         <?php else: ?>
             <?php foreach ($autosCliente as $a): ?>
                 <fieldset>
-                    <legend><?= htmlspecialchars($a['marca'] . ' ' . $a['modelo']) ?></legend>
+                    <legend><?= htmlspecialchars($a['marca'] . ' ' . $a['modelo'] . ' — ' . ($a['placa'] ?: 'sin placa')) ?></legend>
                     <form method="POST" action="">
                         <input type="hidden" name="accion" value="actualizar_auto">
                         <input type="hidden" name="id_cliente" value="<?= $clienteSeleccionado['id_cliente'] ?>">
@@ -143,6 +154,9 @@ require __DIR__ . '/partials/header.php';
                         <label for="anio<?= $a['id_auto'] ?>">Año</label>
                         <input type="number" id="anio<?= $a['id_auto'] ?>" name="anio" min="1900" max="2100" value="<?= htmlspecialchars($a['anio'] ?? '') ?>">
 
+                        <label for="placa<?= $a['id_auto'] ?>">Placa *</label>
+                        <input type="text" id="placa<?= $a['id_auto'] ?>" name="placa" maxlength="10" required value="<?= htmlspecialchars($a['placa'] ?? '') ?>">
+
                         <button type="submit">Guardar vehículo</button>
                     </form>
                 </fieldset>
@@ -153,7 +167,7 @@ require __DIR__ . '/partials/header.php';
         <!-- Buscar cliente -->
         <form method="POST" action="">
             <input type="hidden" name="accion" value="buscar">
-            <label for="criterio">Buscar cliente por nombre, teléfono, correo o id</label>
+            <label for="criterio">Buscar cliente por nombre, teléfono, correo, id o placa del vehículo</label>
             <input type="text" id="criterio" name="criterio" required
                    value="<?= htmlspecialchars($_POST['criterio'] ?? '') ?>">
             <button type="submit">Buscar</button>

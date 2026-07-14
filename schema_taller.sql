@@ -78,6 +78,7 @@ CREATE TABLE auto (
     color           VARCHAR(30),
     anio            SMALLINT,
     id_cliente      INT NOT NULL,
+    placa           VARCHAR(10) UNIQUE,
     CONSTRAINT fk_auto_cliente
         FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
         ON DELETE CASCADE

@@ -112,7 +112,8 @@ require __DIR__ . '/partials/header.php';
                 <fieldset>
                     <legend>Datos de la cita</legend>
                     <label for="fecha">Fecha *</label>
-                    <input type="date" id="fecha" name="fecha" min="<?= date('Y-m-d') ?>" required>
+                    <input type="date" id="fecha" name="fecha" min="<?= date('Y-m-d') ?>" required
+                           onchange="ajustarHoraMinima()">
 
                     <label for="hora">Hora *</label>
                     <input type="time" id="hora" name="hora" required>
@@ -123,6 +124,23 @@ require __DIR__ . '/partials/header.php';
 
                 <button type="submit">Agendar cita</button>
             </form>
+
+            <script>
+            function ajustarHoraMinima() {
+                var fechaInput = document.getElementById('fecha');
+                var horaInput = document.getElementById('hora');
+                var hoy = fechaInput.min;
+
+                if (fechaInput.value === hoy) {
+                    var ahora = new Date();
+                    var hh = String(ahora.getHours()).padStart(2, '0');
+                    var mm = String(ahora.getMinutes()).padStart(2, '0');
+                    horaInput.min = hh + ':' + mm;
+                } else {
+                    horaInput.removeAttribute('min');
+                }
+            }
+            </script>
         <?php endif; ?>
 
     <?php elseif (!$mensaje): ?>

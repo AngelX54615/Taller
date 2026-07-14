@@ -76,4 +76,21 @@ class Empleado
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
+
+    /**
+     * Actualiza los datos comunes de un empleado (teléfono, dirección, turno).
+     * $datos: ['telefono' => ..., 'direccion' => ..., 'turno' => ...]
+     */
+    public function actualizar(int $id, array $datos): bool
+    {
+        $sql = "UPDATE empleado SET telefono = :telefono, direccion = :direccion, turno = :turno
+                WHERE id_empleado = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':telefono'  => $datos['telefono'],
+            ':direccion' => $datos['direccion'],
+            ':turno'     => $datos['turno'],
+            ':id'        => $id,
+        ]);
+    }
 }

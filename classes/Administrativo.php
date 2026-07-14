@@ -62,4 +62,11 @@ class Administrativo extends Empleado
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
+
+    public function actualizarArea(int $id, string $area): bool
+    {
+        $sql = "UPDATE administrativo SET area = :area WHERE id_empleado = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':area' => $area ?: null, ':id' => $id]);
+    }
 }

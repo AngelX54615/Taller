@@ -50,4 +50,15 @@ class Proveedor
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
+
+    public function actualizar(int $id, string $telefono, string $correo): bool
+    {
+        $sql = "UPDATE proveedor SET telefono = :telefono, correo = :correo WHERE id_proveedor = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':telefono' => $telefono ?: null,
+            ':correo'   => $correo ?: null,
+            ':id'       => $id,
+        ]);
+    }
 }

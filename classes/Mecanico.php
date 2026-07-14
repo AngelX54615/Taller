@@ -72,4 +72,11 @@ class Mecanico extends Empleado
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
+
+    public function actualizarEspecialidad(int $id, string $especialidad): bool
+    {
+        $sql = "UPDATE mecanico SET especialidad = :especialidad WHERE id_empleado = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':especialidad' => $especialidad ?: null, ':id' => $id]);
+    }
 }

@@ -16,5 +16,7 @@ require __DIR__ . '/partials/header.php';
         <li><a href="generar_ticket.php">Generar ticket</a></li>
         <li><a href="registrar_refaccion.php">Registrar refacción</a></li>
         <li><a href="inventario_refacciones.php">Ver inventario de refacciones</a></li>
+        <li><a href="gestionar_proveedores.php">Gestión de proveedores</a></li>
+        <li><a href="gestionar_empleados.php">Gestión de empleados</a></li>
     </ul>
 <?php require __DIR__ . '/partials/footer.php'; ?>

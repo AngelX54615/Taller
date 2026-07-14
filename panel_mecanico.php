@@ -12,5 +12,6 @@ require __DIR__ . '/partials/header.php';
         <li><a href="registrar_diagnostico.php">Registrar diagnóstico</a></li>
         <li><a href="actualizar_estado_servicio.php">Actualizar estado de servicio</a></li>
         <li><a href="asignar_refaccion.php">Asignar refacciones a un servicio</a></li>
+        <li><a href="solicitar_refaccion.php">Solicitar refacción</a></li>
     </ul>
 <?php require __DIR__ . '/partials/footer.php'; ?>

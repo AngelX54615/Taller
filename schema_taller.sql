@@ -200,6 +200,28 @@ CREATE TABLE servicio_refaccion (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------
+-- SOLICITUD_REFACCION (RF18 - un mecánico pide una refacción para un
+-- servicio; el administrativo la atiende decidiendo a qué proveedor
+-- pedirla, o la rechaza)
+-- ---------------------------------------------------------
+CREATE TABLE solicitud_refaccion (
+    id_solicitud    INT AUTO_INCREMENT PRIMARY KEY,
+    id_mecanico     INT NOT NULL,
+    id_servicio     INT,
+    nombre_pieza    VARCHAR(100) NOT NULL,
+    cantidad        INT NOT NULL DEFAULT 1,
+    estado          ENUM('Pendiente','Atendida','Rechazada') DEFAULT 'Pendiente',
+    id_proveedor    INT,
+    creado_en       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_solicitud_mecanico
+        FOREIGN KEY (id_mecanico) REFERENCES mecanico(id_empleado),
+    CONSTRAINT fk_solicitud_servicio
+        FOREIGN KEY (id_servicio) REFERENCES servicio(id_servicio),
+    CONSTRAINT fk_solicitud_proveedor
+        FOREIGN KEY (id_proveedor) REFERENCES proveedor(id_proveedor)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------
 -- TICKET (generado al finalizar el servicio y cobrar)
 -- ---------------------------------------------------------
 CREATE TABLE ticket (

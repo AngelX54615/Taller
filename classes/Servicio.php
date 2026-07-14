@@ -119,6 +119,28 @@ class Servicio
     }
 
     /**
+     * Todos los servicios activos (Pendiente o En proceso) de cualquier mecánico,
+     * para que el administrativo pueda cancelarlos si el cliente así lo decide.
+     */
+    public function serviciosActivos(): array
+    {
+        $sql = "SELECT s.*, cl.nombre AS cliente_nombre, cl.apellido_pat AS cliente_apellido,
+                       a.marca, a.modelo,
+                       e.nombre AS mecanico_nombre, e.apellido_pat AS mecanico_apellido
+                FROM servicio s
+                INNER JOIN diagnostico d ON d.id_diagnostico = s.id_diagnostico
+                INNER JOIN cita c ON c.id_cita = d.id_cita
+                INNER JOIN cliente cl ON cl.id_cliente = c.id_cliente
+                INNER JOIN auto a ON a.id_auto = c.id_auto
+                INNER JOIN empleado e ON e.id_empleado = s.id_mecanico
+                WHERE s.estado IN ('Pendiente', 'En proceso')
+                ORDER BY s.creado_en DESC";
+
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Servicios de un mecánico que aún admiten que se les asignen refacciones
      * (no tiene sentido asignar piezas a uno ya Finalizado o Cancelado).
      */

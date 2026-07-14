@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 
             $idTicket = $ticket->guardar();
             $mensaje = "Ticket generado correctamente (id_ticket = $idTicket).";
+            $idTicketGenerado = $idTicket;
 
         } catch (Exception $e) {
             $error = "Ocurrió un error al guardar: " . $e->getMessage();
@@ -50,7 +51,8 @@ require __DIR__ . '/partials/header.php';
 
     <?php if ($mensaje): ?>
         <div class="mensaje exito">✅ <?= htmlspecialchars($mensaje) ?></div>
-        <p><a href="generar_ticket.php">Generar otro ticket</a></p>
+        <p><a href="ver_ticket.php?id_ticket=<?= $idTicketGenerado ?>">Ver ticket</a> ·
+           <a href="generar_ticket.php">Generar otro ticket</a></p>
     <?php else: ?>
 
         <?php if ($error): ?>

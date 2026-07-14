@@ -25,7 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 $servicioObj = new Servicio();
 $serviciosMecanico = $servicioObj->serviciosDeMecanico($idMecanico);
 
-$estadosDisponibles = ['Pendiente', 'En proceso', 'Finalizado', 'Cancelado'];
+// El mecánico avanza el trabajo (Pendiente -> En proceso -> Finalizado);
+// cancelar una orden es decisión del administrativo (ver cancelar_servicio.php).
+$estadosDisponibles = ['Pendiente', 'En proceso', 'Finalizado'];
 $claseBadgeEstado = [
     'Pendiente'  => 'badge-pendiente',
     'En proceso' => 'badge-proceso',

@@ -13,6 +13,7 @@ require __DIR__ . '/partials/header.php';
         <li><a href="editar_cliente.php">Editar cliente y vehículos</a></li>
         <li><a href="agendar_cita.php">Agendar cita</a></li>
         <li><a href="generar_servicio.php">Generar orden de servicio</a></li>
+        <li><a href="cancelar_servicio.php">Cancelar servicio</a></li>
         <li><a href="generar_ticket.php">Generar ticket</a></li>
         <li><a href="registrar_refaccion.php">Registrar refacción</a></li>
         <li><a href="inventario_refacciones.php">Ver inventario de refacciones</a></li>

@@ -66,4 +66,31 @@ class Ticket
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
     }
+
+    /**
+     * RF16: datos completos del ticket para mostrarlo en pantalla como un recibo
+     * (cliente, vehículo, servicio, mecánico y administrativo que lo generó).
+     */
+    public function verDetalle(int $id): array|false
+    {
+        $sql = "SELECT t.*,
+                       s.id_servicio, s.tipo_servicio, s.descripcion AS servicio_descripcion, s.costo,
+                       cl.nombre AS cliente_nombre, cl.apellido_pat AS cliente_apellido,
+                       cl.telefono AS cliente_telefono, cl.correo AS cliente_correo,
+                       a.marca, a.modelo, a.anio, a.color, a.placa,
+                       adm.nombre AS admin_nombre, adm.apellido_pat AS admin_apellido,
+                       mec.nombre AS mecanico_nombre, mec.apellido_pat AS mecanico_apellido
+                FROM ticket t
+                INNER JOIN servicio s ON s.id_servicio = t.id_servicio
+                INNER JOIN diagnostico d ON d.id_diagnostico = s.id_diagnostico
+                INNER JOIN cita c ON c.id_cita = d.id_cita
+                INNER JOIN cliente cl ON cl.id_cliente = c.id_cliente
+                INNER JOIN auto a ON a.id_auto = c.id_auto
+                INNER JOIN empleado adm ON adm.id_empleado = t.id_administrativo
+                INNER JOIN empleado mec ON mec.id_empleado = s.id_mecanico
+                WHERE t.id_ticket = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch();
+    }
 }

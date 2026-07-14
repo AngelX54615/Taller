@@ -112,7 +112,7 @@ require __DIR__ . '/partials/header.php';
                 <fieldset>
                     <legend>Datos de la cita</legend>
                     <label for="fecha">Fecha *</label>
-                    <input type="date" id="fecha" name="fecha" required>
+                    <input type="date" id="fecha" name="fecha" min="<?= date('Y-m-d') ?>" required>
 
                     <label for="hora">Hora *</label>
                     <input type="time" id="hora" name="hora" required>

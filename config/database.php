@@ -4,6 +4,11 @@
  * Ajusta $host, $usuario y $password si tu configuración de XAMPP es distinta.
  */
 
+// El taller opera en Ciudad Juárez. Se fija aquí (y no en php.ini) para que
+// "hoy" (usado, por ejemplo, para no permitir citas en fechas ya pasadas)
+// sea correcto sin depender de la zona horaria configurada en el servidor.
+date_default_timezone_set('America/Ojinaga');
+
 class Database
 {
     private string $host = "localhost";

@@ -46,10 +46,14 @@ class Cita
 
     /**
      * Registra la cita. Internamente busca y asigna un mecánico disponible (RF3 y RF4).
-     * Lanza una excepción si no hay ningún mecánico libre en ese horario.
+     * Lanza una excepción si la fecha ya pasó, o si no hay ningún mecánico libre en ese horario.
      */
     public function guardar(): int
     {
+        if ($this->fecha < date('Y-m-d')) {
+            throw new Exception("No se pueden agendar citas en una fecha que ya pasó.");
+        }
+
         $this->id_mecanico = $this->buscarMecanicoDisponible($this->fecha, $this->hora);
 
         if ($this->id_mecanico === null) {

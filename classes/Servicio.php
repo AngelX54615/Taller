@@ -21,8 +21,21 @@ class Servicio
         $this->db = $conexion->conectar();
     }
 
+    /**
+     * Un mecánico solo puede trabajar en un servicio a la vez: no se le puede
+     * asignar uno nuevo mientras tenga otro Pendiente o En proceso.
+     */
     public function guardar(): int
     {
+        $sqlOcupado = "SELECT COUNT(*) FROM servicio
+                        WHERE id_mecanico = :id_mecanico AND estado IN ('Pendiente', 'En proceso')";
+        $stmtOcupado = $this->db->prepare($sqlOcupado);
+        $stmtOcupado->execute([':id_mecanico' => $this->id_mecanico]);
+
+        if ((int) $stmtOcupado->fetchColumn() > 0) {
+            throw new Exception("Este mecánico ya tiene un servicio activo; no puede trabajar en otro a la vez.");
+        }
+
         $sql = "INSERT INTO servicio (costo, descripcion, tipo_servicio, tiempo_estimado, estado,
                                        id_diagnostico, id_administrativo, id_mecanico)
                 VALUES (:costo, :descripcion, :tipo_servicio, :tiempo_estimado, :estado,

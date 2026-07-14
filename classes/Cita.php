@@ -20,7 +20,9 @@ class Cita
     }
 
     /**
-     * Busca un mecánico que NO tenga ya una cita en esa misma fecha y hora.
+     * Busca un mecánico que NO tenga ya una cita en esa misma fecha y hora, y que
+     * tampoco esté ocupado en un servicio activo (Pendiente o En proceso) de otra
+     * cita: un mecánico solo trabaja en un servicio a la vez.
      * Devuelve el id_empleado del mecánico disponible, o null si no hay ninguno.
      */
     public function buscarMecanicoDisponible(string $fecha, string $hora): ?int
@@ -34,6 +36,10 @@ class Cita
                       WHERE fecha = :fecha AND hora = :hora
                         AND id_mecanico IS NOT NULL
                         AND estado <> 'Cancelada'
+                  )
+                  AND m.id_empleado NOT IN (
+                      SELECT id_mecanico FROM servicio
+                      WHERE estado IN ('Pendiente', 'En proceso')
                   )
                 LIMIT 1";
 
